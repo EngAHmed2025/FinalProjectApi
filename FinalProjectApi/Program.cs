@@ -2,6 +2,7 @@
 using FinalProject.Core.Repositories.Contract;
 using FinalProject.Repository;
 using FinalProject.Repository.Data;
+using FinalProjectApi.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectApi
@@ -23,6 +24,7 @@ namespace FinalProjectApi
                 options => { options.UseSqlServer(builder.Configuration.GetConnectionString("defaultConnection"));
                 });
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            builder.Services.AddAutoMapper(typeof(MappingProfiles));
 
             var app = builder.Build();
             using var scope = app.Services.CreateScope();
@@ -33,6 +35,7 @@ namespace FinalProjectApi
             try
             {
                 await _dbcontext.Database.MigrateAsync();
+                await StoreContextSeed.SeedAsync(_dbcontext);
             }catch (Exception ex) 
             {
 
@@ -51,7 +54,7 @@ namespace FinalProjectApi
 
             app.UseAuthorization();
 
-
+            app.UseStaticFiles();
             app.MapControllers();
 
             app.Run();

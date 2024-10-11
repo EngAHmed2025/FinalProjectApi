@@ -1,5 +1,6 @@
 ﻿using FinalProject.Core.Models;
 using FinalProject.Core.Repositories.Contract;
+using FinalProject.Core.Specifictions;
 using FinalProject.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -26,6 +27,11 @@ namespace FinalProject.Repository
           return (IEnumerable<T>) await _dbcontext.Set<Product>().Include(P=>P.Brand).Include(P=>P.Category).ToListAsync();
         }
 
+        public async Task<IEnumerable<T>> GetAllWithSpecAsync(ISpecifictions<T> spec)
+        {
+            return await SpecifictionEvaluator<T>.GetQuery(_dbcontext.Set<T>(), spec).ToListAsync();
+        }
+
         public async Task<T> GetAsync(int id)
         {
 
@@ -35,6 +41,10 @@ namespace FinalProject.Repository
             }
             return await _dbcontext.Set<T>().FindAsync(id);
         }
-            
+
+        public async Task<T> GetWithSpecAsync(ISpecifictions<T> spec)
+        {
+            return await SpecifictionEvaluator<T>.GetQuery(_dbcontext.Set<T>(), spec).FirstOrDefaultAsync();
         }
+    }
 }
