@@ -2,7 +2,12 @@
 using FinalProject.Core.Repositories.Contract;
 using FinalProject.Repository;
 using FinalProject.Repository.Data;
+using FinalProjectApi.Errors;
+using FinalProjectApi.Extensions;
 using FinalProjectApi.Helpers;
+using FinalProjectApi.MiddleWare;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectApi
@@ -23,9 +28,11 @@ namespace FinalProjectApi
                
                 options => { options.UseSqlServer(builder.Configuration.GetConnectionString("defaultConnection"));
                 });
-            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            builder.Services.AddAutoMapper(typeof(MappingProfiles));
 
+            //ApplicationServicesExtension.AddApplicationServices(builder.Services);
+
+            builder.Services.AddApplicationServices();
+                        
             var app = builder.Build();
             using var scope = app.Services.CreateScope();
             var services = scope.ServiceProvider;
@@ -42,13 +49,13 @@ namespace FinalProjectApi
                 var logger = loggerFactory.CreateLogger<Program>();
                 logger.LogError(ex, "An Error occurred during Migration");
             }
-
-            // Configure the HTTP request pipeline.
+            app.UseMiddleware<ExceptionMiddleware>();
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerMiddleWare(); 
             }
+
+            app.UseStatusCodePagesWithReExecute("/Errors/{0}");
 
             app.UseHttpsRedirection();
 
