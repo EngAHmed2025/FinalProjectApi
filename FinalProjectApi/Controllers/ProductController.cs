@@ -27,12 +27,12 @@ namespace FinalProjectApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProudcts()
+        public async Task<ActionResult<IReadOnlyList<ProductDto>>> GetProudcts([FromQuery]ProductSpecParams specParams )
         {
-            var spec = new ProductIncludes();
+            var spec = new ProductIncludes(specParams);
             var products = await _productRepo.GetAllWithSpecAsync(spec);
 
-            return Ok(_mapper.Map<IEnumerable<Product>, IEnumerable<ProductDto>>(products));
+            return Ok(_mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductDto>>(products));
         }
         [ProducesResponseType(typeof(ProductDto),StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse),StatusCodes.Status404NotFound)]

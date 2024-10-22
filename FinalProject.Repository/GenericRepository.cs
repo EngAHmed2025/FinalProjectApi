@@ -19,15 +19,15 @@ namespace FinalProject.Repository
         {
            _dbcontext = dbcontext;
         }
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IReadOnlyList<T>> GetAllAsync()
         {
             if (typeof(T) == typeof(Product)){
                 return await _dbcontext.Set<T>().ToListAsync();
             }
-          return (IEnumerable<T>) await _dbcontext.Set<Product>().Include(P=>P.Brand).Include(P=>P.Category).ToListAsync();
+          return (IReadOnlyList<T>) await _dbcontext.Set<Product>().Where(P=>P.BrandId == 2).Skip(5).Take(5).OrderBy(P=>P.Name).Include(P=>P.Brand).Include(P=>P.Category).ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> GetAllWithSpecAsync(ISpecifictions<T> spec)
+        public async Task<IReadOnlyList<T>> GetAllWithSpecAsync(ISpecifictions<T> spec)
         {
             return await SpecifictionEvaluator<T>.GetQuery(_dbcontext.Set<T>(), spec).ToListAsync();
         }
@@ -37,7 +37,7 @@ namespace FinalProject.Repository
 
             if (typeof(T) == typeof(Product))
             {
-                return await _dbcontext.Set<Product>().Where(P => P.Id == id).Include(P=>P.Brand).Include(Product=>Product.Category).FirstOrDefaultAsync()as T;
+                return await _dbcontext.Set<Product>().Where(P => P.Id == id).OrderBy(P=>P.Price).Include(P=>P.Brand).Include(Product=>Product.Category).FirstOrDefaultAsync()as T;
             }
             return await _dbcontext.Set<T>().FindAsync(id);
         }
