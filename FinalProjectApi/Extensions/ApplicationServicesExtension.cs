@@ -37,6 +37,8 @@ namespace FinalProjectApi.Extensions
 
                 });
 
+            services.AddScoped(typeof(IBasketRepository), typeof(BasketRepository));
+
             return services;
         }
 
