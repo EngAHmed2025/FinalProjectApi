@@ -1,5 +1,8 @@
-﻿using FinalProject.Core.Repositories.Contract;
+﻿using FinalProject.Core;
+using FinalProject.Core.Repositories.Contract;
+using FinalProject.Core.Services.Contract;
 using FinalProject.Repository;
+using FinalProject.Services;
 using FinalProjectApi.Errors;
 using FinalProjectApi.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +14,9 @@ namespace FinalProjectApi.Extensions
         public  static IServiceCollection AddApplicationServices( this IServiceCollection services)
 
         {
-           services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddScoped(typeof(IOrderService), typeof(OrderService));
+            services.AddScoped(typeof(IUnitofWork), typeof(UnitOfWork));
+          // services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
            services.AddAutoMapper(typeof(MappingProfiles));
            services.Configure<ApiBehaviorOptions>(
                 options =>

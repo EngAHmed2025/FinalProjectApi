@@ -16,5 +16,10 @@ namespace FinalProject.Core.Repositories.Contract
         Task<IReadOnlyList<T>> GetAllWithSpecAsync(ISpecifictions<T> spec);
 
         Task<T> GetWithSpecAsync(ISpecifictions<T> spec);
+
+        Task AddAsync(T entity);
+
+        void UpdateAsync(T entity);
+        void DeleteAsync(T entity);   
     }
 }

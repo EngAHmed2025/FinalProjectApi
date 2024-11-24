@@ -16,7 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FinalProject.Core\FinalProject.Core.csproj" />
     <ProjectReference Include="..\FinalProject.Repository\FinalProject.Repository.csproj" />
+    <ProjectReference Include="..\FinalProject.Services\FinalProject.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>

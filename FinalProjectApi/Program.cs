@@ -65,7 +65,6 @@ namespace FinalProjectApi
             {
                 await _dbcontext.Database.MigrateAsync();
                 await StoreContextSeed.SeedAsync(_dbcontext);
-           
                 await _identityDbContext.Database.MigrateAsync();
                 await AppIdentityDbContextSeed.SeedUserAsync(_userManager);
                 

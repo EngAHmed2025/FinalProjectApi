@@ -19,6 +19,17 @@ namespace FinalProject.Repository
         {
            _dbcontext = dbcontext;
         }
+
+        public async Task AddAsync(T entity)
+        {
+          await  _dbcontext.AddAsync(entity);
+        }
+
+        public void DeleteAsync(T entity)
+        {
+         _dbcontext.Remove(entity);
+        }
+
         public async Task<IReadOnlyList<T>> GetAllAsync()
         {
             if (typeof(T) == typeof(Product)){
@@ -45,6 +56,11 @@ namespace FinalProject.Repository
         public async Task<T> GetWithSpecAsync(ISpecifictions<T> spec)
         {
             return await SpecifictionEvaluator<T>.GetQuery(_dbcontext.Set<T>(), spec).FirstOrDefaultAsync();
+        }
+
+        public void   UpdateAsync(T entity)
+        {
+            _dbcontext.Update(entity);
         }
     }
 }

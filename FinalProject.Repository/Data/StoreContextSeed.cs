@@ -1,4 +1,5 @@
 ﻿using FinalProject.Core.Models;
+using FinalProject.Core.Order_Aggregrate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,6 +65,27 @@ namespace FinalProject.Repository.Data
                         _dbcontext.Set<Product>().Add(product);
                         }
                 
+                    await _dbcontext.SaveChangesAsync();
+
+                }
+
+            }
+
+            var DeliveryData = File.ReadAllText("../FinalProject.Repository/Data/DataSeeding/delivery.json");
+            var deliveryMethods = JsonSerializer.Deserialize<List<DeliveryMethod>>(DeliveryData);
+
+            if (deliveryMethods?.Count() > 0)
+            {
+
+                if (_dbcontext.DeliveryMethods.Count() == 0)
+
+                {
+
+                    foreach (var method in deliveryMethods)
+                    {
+                        _dbcontext.Set<DeliveryMethod>().Add(method);
+                    }
+
                     await _dbcontext.SaveChangesAsync();
 
                 }

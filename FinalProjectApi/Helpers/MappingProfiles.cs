@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FinalProject.Core.Models;
+using FinalProject.Core.Order_Aggregrate;
 using FinalProjectApi.Dtos;
 using static System.Net.WebRequestMethods;
 
@@ -18,6 +19,7 @@ namespace FinalProjectApi.Helpers
                 .ForMember(d=>d.PictureUrl,o=>o.MapFrom<ProductPictureUrlResolver>());
             CreateMap<CustomerBasketDto, CustomerBasket>();
             CreateMap<BasketItemDto, BasketItem>(); 
+            CreateMap<AddressDto , Address>();
         }
     }
 }
