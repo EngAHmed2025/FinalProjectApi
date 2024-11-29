@@ -3,6 +3,7 @@ using FinalProject.Core.Models;
 using FinalProject.Core.Order_Aggregrate;
 using FinalProject.Core.Repositories.Contract;
 using FinalProject.Core.Services.Contract;
+using FinalProject.Core.Specifictions.OrderSpecifiction;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace FinalProject.Services
             _unitofWork = unitofWork;
            
         }
-        public async Task<Order> CreateOrderAsync(string buyerEmail, string basketId, int deliveryMethodId, Address shippingAddress)
+        public async Task<Order> CreateOrderAsync(string buyerEmail, string basketId, int deliveryMethodId, Address shippingAddress )
         {
             var basket = await _basketRepository.GetBasketAsync(basketId);
             var orderItems = new List<OrderItems>();
@@ -40,9 +41,9 @@ namespace FinalProject.Services
                 }
             }
 
-            var subTotal = orderItems.Sum(orderItems => orderItems.Quantity);
+            var subTotal = orderItems.Sum(orderItems => orderItems.Price * orderItems.Quantity);
             var deliveryMethod = await _unitofWork.Repository<DeliveryMethod>().GetAsync(deliveryMethodId);
-            var order = new Order(buyerEmail, shippingAddress, deliveryMethod,orderItems, subTotal);
+            var order = new Order(buyerEmail, shippingAddress, deliveryMethod, orderItems, subTotal);
            await _unitofWork.Repository<Order>().AddAsync(order);
 
         var result =  await  _unitofWork.CompleteAsync();
@@ -52,12 +53,18 @@ namespace FinalProject.Services
 
         public Task<Order> GetOrderByIdForUserAsync(int orderId, string buyerEmail)
         {
-            throw new NotImplementedException();
+            var orderRepo = _unitofWork.Repository<Order>();
+            var spec = new OrderSpecifications(orderId,buyerEmail);
+            var order = orderRepo.GetWithSpecAsync(spec);
+            return order;
         }
 
         public Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string buyerEmail)
         {
-            throw new NotImplementedException();
+            var orderRepo = _unitofWork.Repository<Order>();
+            var spec = new OrderSpecifications(buyerEmail);
+            var orders =  orderRepo.GetAllWithSpecAsync(spec);
+            return orders;
         }
     }
 }

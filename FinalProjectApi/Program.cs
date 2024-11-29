@@ -1,9 +1,11 @@
 
 using FinalProject.Core.Models.Identity;
 using FinalProject.Core.Repositories.Contract;
+using FinalProject.Core.Services.Contract;
 using FinalProject.Repository;
 using FinalProject.Repository.Data;
 using FinalProject.Repository.Data.Identity;
+using FinalProject.Services;
 using FinalProjectApi.Errors;
 using FinalProjectApi.Extensions;
 using FinalProjectApi.Helpers;
@@ -12,7 +14,10 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
+using System.Text;
 
 namespace FinalProjectApi
 {
@@ -37,6 +42,19 @@ namespace FinalProjectApi
               options => {
                   options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
               });
+            builder.Services.AddAuthentication().AddJwtBearer("Bearer", options => {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration["JWT: ValidIssure"],
+                    ValidateAudience = true,
+                    ValidAudience = builder.Configuration["JWT:ValidAudience"],
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:AuthKey"] ?? string.Empty))
+                };
+            });
             builder.Services.AddSingleton<IConnectionMultiplexer>((serviceProvider) =>
             {
                 var connection = builder.Configuration.GetConnectionString("Redis");
@@ -52,7 +70,8 @@ namespace FinalProjectApi
                 //options.Password.RequiredUniqueChars = 2;
                 //options.Password.RequireDigit = true;
 
-            }).AddEntityFrameworkStores<AppIdentityDbContext>();                        
+            }).AddEntityFrameworkStores<AppIdentityDbContext>();
+            builder.Services.AddScoped(typeof(IAuthService), typeof(AuthService));
             var app = builder.Build();
             using var scope = app.Services.CreateScope();
             var services = scope.ServiceProvider;

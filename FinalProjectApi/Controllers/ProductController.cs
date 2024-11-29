@@ -5,6 +5,7 @@ using FinalProject.Core.Specifictions;
 using FinalProject.Core.Specifictions.ProductSpecifiction;
 using FinalProjectApi.Dtos;
 using FinalProjectApi.Errors;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +27,7 @@ namespace FinalProjectApi.Controllers
             _mapper = mapper;
         }
 
+        [Authorize(AuthenticationSchemes ="Bearer")]
         [HttpGet]
         public async Task<ActionResult<IReadOnlyList<ProductDto>>> GetProudcts([FromQuery]ProductSpecParams specParams )
         {
